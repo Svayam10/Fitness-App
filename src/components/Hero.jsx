@@ -11,9 +11,9 @@ export default function Hero() {
       </div>
 
       <p className="text-sm md:text-base font-light">
-        I hereby acknowledge that I may become{" "}
+        I hereby acknowledge that I may become
         <span className="text-blue-400 font-medium">unbelievably fit</span> and
-        accept all risks of becoming a local{" "}
+        accept all risks of becoming a local
         <span className="text-blue-400 font-medium">mass monstrosity</span>,
         afflicted with severe body dismorphia, unable to fit through doors.
       </p>
