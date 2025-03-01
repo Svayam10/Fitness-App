@@ -1,6 +1,7 @@
-import React from 'react'
+import React, {useState} from 'react'
 import SectionWrapper from './SectionWrapper'
-import { WORKOUTS } from '../utils/swolider'
+import { SCHEMES, WORKOUTS } from '../utils/swolider'
+import Button from './Button'
 
 function Header (props) {
   const {index,title,description} = props
@@ -15,14 +16,50 @@ function Header (props) {
   )
 }
 
-export default function Generator() {
+export default function Generator(props) {
+  const {poison, setPoison, muscles, setMuscles, goals, setGoals} = props
+
+  const [showModal, setShowModal] = useState(false)
+
+
+
+  function toggleModal() {
+    setShowModal(!showModal)
+  }
+
+  function updateMuscles(muscleGroup){
+
+    if(muscles.includes(muscleGroup)){
+      setMuscles(muscles.filter(val => val !== muscleGroup))
+      return
+    }
+
+    if (muscles.length > 2){
+      return
+    }
+    if (poison !== 'individual'){
+      setMuscles([muscleGroup])
+      setShowModal(false)
+      return
+    }
+    
+    setMuscles([...muscles,muscleGroup])
+    if (muscles.length === 2){
+      setShowModal(false)
+    }
+
+  }
+
   return (
     <SectionWrapper header={'Generate your Workout'} title={['It\'s','huge','o\'clock']}>
       <Header index={'01'} title={'Pick your poison'} description={'Select the workout you wish to endure.'}/>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {Object.keys(WORKOUTS).map((type ,typeIndex) => {
           return(
-            <button className="bg-slate-950 border border-blue-400 duration-200 hover:border-blue-600 py-3 rounded-lg" key={typeIndex}>
+            <button onClick={()=>{
+              setMuscles([])
+              setPoison(type)
+            }} className={"bg-slate-950 border duration-200  hover:border-blue-800 py-3 rounded-lg" + (type === poison ? 'border border-blue-600' : 'border border-blue-400')} key={typeIndex}>
               <p className='capitalize'>{type.replaceAll('_'," ")}</p>
             </button>
           )
@@ -30,12 +67,42 @@ export default function Generator() {
       </div>
 
       <Header index={'02'} title={'Lock on targets'} description={'Select the muscles judged for annihilation.'}/>
-      <div className="bg-slate-950 border border-solid border-blue-400 p-3 rounded-lg">
-        <div className='relative flex items-center justify-center'>
-          <p>Select muscle groups</p>
+      <div className="bg-slate-950 border border-solid border-blue-400 p-3 rounded-lg flex flex-col">
+        <button onClick={toggleModal} className='relative p-3 flex items-center justify-center'>
+          <p className='uppercase'>{muscles.length == 0 ? 'Select muscle groups': muscles.join(' ')}</p>
           <i className="fa-solid absolute right-3 top-1/2 -translate-y-1/2 fa-caret-down"></i>
-        </div>
+        </button>
+        {showModal && (
+          <div className='flex flex-col px-3 pb-3'>
+            {(poison === 'individual' ? WORKOUTS[poison] : Object.keys(WORKOUTS[poison])).map((muscleGroup,muscleGroupIndex)=>{
+              return(
+                <button onClick={()=>{
+                  updateMuscles(muscleGroup)
+                }} key={muscleGroupIndex} className={'hover:text-blue-400 px-4 duration-200'+ (muscles.includes(muscleGroup) ? ' text-blue-400' : '')}>
+                  <p className='uppercase'>{muscleGroup.replaceAll("_","")}</p>
+                </button>
+              )
+            })
+
+            }
+          </div>
+        )}
       </div>
+
+      <Header index={'03'} title={'Become Juggernaut'} description={'Select your ultimate objective.'}/>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {Object.keys(SCHEMES).map((scheme ,schemeIndex) => {
+          return(
+            <button onClick={()=>{
+              setGoals(scheme)
+            }} className={"bg-slate-950 border duration-200 px-4 hover:border-blue-800 py-3 rounded-lg" + (scheme === goals ? 'border border-blue-600' : 'border border-blue-400')} key={schemeIndex}>
+              <p className='capitalize'>{scheme.replaceAll('_'," ")}</p>
+            </button>
+          )
+        })}
+      </div>
+      <Button text='Formulate Workout'/>
+      
 
     </SectionWrapper>
   )
